@@ -27,6 +27,7 @@ const Registration = () => {
 
         console.log(registrationFilled);
 
+
         if(!checkEmail) {
             setUser(prevState => ({
                 ...prevState,
@@ -40,10 +41,18 @@ const Registration = () => {
                 error: 'Please enter password with at least 5 characters.'
             }))
         }
+
         if(!checkPasswordConfirm) {
             setUser(prevState => ({
                 ...prevState,
                 error: 'Password and confirmed password do not match.'
+            }))
+        }
+
+        if(user.username == "" && user.email == "" && user.password == "" && user.passwordConfirm == "") {
+            setUser(prevState => ({
+                ...prevState,
+                error: 'Please fill all fields.'
             }))
         }
     }
