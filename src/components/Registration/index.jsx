@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ErrorModal from '../ErrorModal';
 import './style.css';
 
@@ -9,60 +9,88 @@ const Registration = () => {
         password: '',
         passwordConfirm: '',
         error: '',
-    })
+    });
+
+    const [isValid, setIsValid] = useState({
+        emailIsValid: false,
+        passwordIsValid: false,
+    });
+
+    const registrationFilled = {
+        username: user.username || createUserName,
+        email: user.email,
+        password: user.password,
+        passwordConfirm: user.passwordConfirm,
+        error: user.error,
+    }
+
+    const createUserName = user.email.split('@')[0];
+    const checkEmail = registrationFilled.email.trim().length > 1 && registrationFilled.email.trim().includes('@');
+    const checkPassword = registrationFilled.password.length >= 5;
+    const checkPasswordConfirm = registrationFilled.password === registrationFilled.passwordConfirm;
+
+
+    useEffect(() => {
+        if(createUserName && checkPassword) {
+            setIsValid(prevState => ({
+                ...prevState,
+                emailIsValid: true,
+                passwordIsValid: true
+            }));
+        }
+    }, [user])
 
     const checkFormValidity = () => {
-        const createUserName = user.email.split('@')[0];
-        const registrationFilled = {
-            username: user.username || createUserName,
-            email: user.email,
-            password: user.password,
-            passwordConfirm: user.passwordConfirm,
-            error: user.error,
-        }
-
-        const checkEmail = registrationFilled.email.trim().length > 1 && registrationFilled.email.trim().includes('@');
-        const checkPassword = registrationFilled.password.length >= 5;
-        const checkPasswordConfirm = registrationFilled.password === registrationFilled.passwordConfirm;
-
         console.log(registrationFilled);
-
 
         if(!checkEmail) {
             setUser(prevState => ({
                 ...prevState,
                 error: 'Please enter valid email.'
-            }))
+            }));
         }
 
         if(!checkPassword) {
             setUser(prevState => ({
                 ...prevState,
                 error: 'Please enter password with at least 5 characters.'
-            }))
+            }));
         }
 
         if(!checkPasswordConfirm) {
             setUser(prevState => ({
                 ...prevState,
                 error: 'Password and confirmed password do not match.'
-            }))
+            }));
         }
 
         if(user.username == "" && user.email == "" && user.password == "" && user.passwordConfirm == "") {
             setUser(prevState => ({
                 ...prevState,
                 error: 'Please fill all fields.'
-            }))
+            }));
+            setIsValid(prevState => ({
+                ...prevState,
+                emailIsValid: false
+            }));
         }
+        console.log(isValid)
     }
+
+
 
     const createRegistration = (event) => {
         event.preventDefault();
-        setUser(prevState => ({
+
+       isValid.emailIsValid && setUser(prevState => ({
             ...prevState,
                 username: '',
                 email: '',
+        }));
+
+        // pole hesel se vynulují vždy, když je formulář vyplněn chybně
+       setUser(prevState => ({
+            ...prevState,
                 password: '',
                 passwordConfirm: '',
                 error: '',
